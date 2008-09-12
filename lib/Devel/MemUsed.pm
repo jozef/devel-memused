@@ -21,6 +21,45 @@ Devel::MemUsed - returns how much memory as allocated since the Devel::MemUsed o
 
 =head1 DESCRIPTION
 
+The purpose of this module is to see how much more memory is allocated after some
+lines of code that were executed. How much memory a huge hash takes or an eval of
+a "foreign" code.
+
+Second purpouse was to try L<Devel::Mallinfo> and L<Contextual::Return>. L<Devel::Mallinfo>
+returns a hash filled with a mallinfo struct. This struct is defined in F<malloc.h> and
+looks like this:
+
+    struct mallinfo {
+      int arena;    /* non-mmapped space allocated from system */
+      int ordblks;  /* number of free chunks */
+      int smblks;   /* number of fastbin blocks */
+      int hblks;    /* number of mmapped regions */
+      int hblkhd;   /* space in mmapped regions */
+      int usmblks;  /* maximum total allocated space */
+      int fsmblks;  /* space available in freed fastbin blocks */
+      int uordblks; /* total allocated space */
+      int fordblks; /* total free space */
+      int keepcost; /* top-most, releasable (via malloc_trim) space */
+    };
+
+While writing the tests I have dicovered two strange thinks.
+
+1st is that:
+
+    my $x1 = "x" x (100*1024);           # this one takes >200kB of memory ?!?!?
+    my $x2 = eval '"x" x (100*1024)';    # this one just   ~100kB
+
+2nd is that C<"x" x 128*1024> is a magic border when hblkhd start to increase. To get
+some meaning full results of memory usage I had to add C<uordblks + hblkhd> together to
+get total memory usage. What is the real meaning of C<hblkhd> and how it works with
+memory allocation of huge strings is unclear to me. If you know some details or
+explanation I'll be more then happy to hear it.
+
+On YAPC Europe 2008 Darko Obradovic showed a code snipped using L<Devel::Mallinfo>
+and a function C<mallinfo> to get the statistics of memory allocated using C<malloc>.
+On this same conference Damian Conway in his keynote was showing L<Contextual::Return>.
+I put those two together and play arrond, hopefully producing something usefull. :-)
+
 =cut
 
 use warnings;
@@ -60,15 +99,37 @@ sub new {
     ;
 }
 
+
+=head2 used()
+
+Returns how many bytes of memory is used.
+
+=cut
+
 sub used {
     my $self = shift;    
     return $self->allocated_memory - $self->memory_offset;
 }
 
+
+=head2 reset()
+
+Reset the "counter" and start to count the memory allocated from the line of code
+where the C<reset()> was called.
+
+=cut
+
 sub reset {
     my $self = shift;
     return $self->memory_offset($self->allocated_memory);
 }
+
+
+=head2 allocated_memory()
+
+Return total number of mmap allocated memory since the start of the program.
+
+=cut
 
 sub allocated_memory {
     my $self = shift;
@@ -82,8 +143,24 @@ sub allocated_memory {
 
 __END__
 
+=head1 THANKS TO
+
+Darko Obradovic for his talk about L<http://www.cosair.com>.
+
+and
+
+Damian Conway for his YAPC Europe 2008 keynote + the hack number #92 in
+"Perl Hacks" book where I first read about L<Contextual::Return>.
+
 =head1 AUTHOR
 
 Jozef Kutej
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself. 
+
+=cut
 
 =cut

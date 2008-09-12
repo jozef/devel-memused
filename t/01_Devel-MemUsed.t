@@ -37,7 +37,7 @@ sub main {
 
 	$memused->reset;
 
-	# 127*1024 is a magic border when hblkhd start to increase		
+	# 127*1024 is a magic border after which hblkhd start to increase		
 	my $x3 = eval '"x" x (128*1024)';
 	cmp_ok($memused, '>', 128*1024, 'more then 128kB should be allocated now ('.$memused.')');
 

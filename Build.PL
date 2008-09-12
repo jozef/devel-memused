@@ -10,8 +10,9 @@ my $builder = Module::Build->new(
     dist_author         => 'Jozef Kutej <jkutej@cpan.org>',
     dist_version_from   => 'lib/Devel/MemUsed.pm',
     requires => {
-        'Contextual::Return' => 0,
-        'Devel::Mallinfo'    => 0,
+        'Contextual::Return'    => 0,
+        'Devel::Mallinfo'       => 0,
+        'Class::Accessor::Fast' => 0,
     },
     build_requires => {
         'Test::More'  => 0,
