@@ -6,7 +6,7 @@
 /Makefile.PL
 /Build
 /_build
-/Pod-2-DocBook-*.tar.gz
+/Devel-MemUsed-*.tar.gz
 /MANIFEST.bak
 /cover_db
 /t/*.out

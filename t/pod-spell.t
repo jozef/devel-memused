@@ -12,5 +12,9 @@ plan skip_all => "Test::Spelling required for testing POD spelling"
 
 add_stopwords(qw(
 	Jozef
+	Kutej
+	Darko
+	Obradovic
+	YAPC
 ));
 all_pod_files_spelling_ok();

@@ -25,8 +25,8 @@ The purpose of this module is to see how much more memory is allocated after som
 lines of code that were executed. How much memory a huge hash takes or an eval of
 a "foreign" code.
 
-Second purpouse was to try L<Devel::Mallinfo> and L<Contextual::Return>. L<Devel::Mallinfo>
-returns a hash filled with a mallinfo struct. This struct is defined in F<malloc.h> and
+Second purpose was to try L<Devel::Mallinfo> and L<Contextual::Return>. L<Devel::Mallinfo>
+returns a hash filled with a C<mallinfo> struct. This struct is defined in F<malloc.h> and
 looks like this:
 
     struct mallinfo {
@@ -42,14 +42,14 @@ looks like this:
       int keepcost; /* top-most, releasable (via malloc_trim) space */
     };
 
-While writing the tests I have dicovered two strange thinks.
+While writing the tests I have discovered two strange thinks.
 
 1st is that:
 
     my $x1 = "x" x (100*1024);           # this one takes >200kB of memory ?!?!?
     my $x2 = eval '"x" x (100*1024)';    # this one just   ~100kB
 
-2nd is that C<"x" x 128*1024> is a magic border when hblkhd start to increase. To get
+2nd is that C<"x" x 128*1024> is a magic border when C<hblkhd> start to increase. To get
 some meaning full results of memory usage I had to add C<uordblks + hblkhd> together to
 get total memory usage. What is the real meaning of C<hblkhd> and how it works with
 memory allocation of huge strings is unclear to me. If you know some details or
@@ -58,7 +58,7 @@ explanation I'll be more then happy to hear it.
 On YAPC Europe 2008 Darko Obradovic showed a code snipped using L<Devel::Mallinfo>
 and a function C<mallinfo> to get the statistics of memory allocated using C<malloc>.
 On this same conference Damian Conway in his keynote was showing L<Contextual::Return>.
-I put those two together and play arrond, hopefully producing something usefull. :-)
+I put those two together and play around, hopefully producing something useful. :-)
 
 =cut
 
@@ -127,7 +127,7 @@ sub reset {
 
 =head2 allocated_memory()
 
-Return total number of mmap allocated memory since the start of the program.
+Return total number of C<mmap> allocated memory since the start of the program.
 
 =cut
 
@@ -160,7 +160,5 @@ Jozef Kutej
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
-
-=cut
 
 =cut
